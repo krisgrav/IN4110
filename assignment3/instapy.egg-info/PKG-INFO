@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: instapy
+Version: 1.0.0
+Summary: Package for adding greyscale and sepia filters to images. 
+Author-email: Kristian Hjortland Gravermoen <krisgrav@uio.no>
+License: MIT License
+Requires-Python: >=3.8
+Requires-Dist: numpy>=1.18.0
+Requires-Dist: numba>=0.50.0
+Requires-Dist: Pillow>=8.0.0
+Requires-Dist: line-profiler>=3.0.2

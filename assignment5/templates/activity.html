@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Activity Prices</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Helvetica, Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .error {
+        color: red;
+      }
+
+      a {
+        color: black;
+      }
+
+      #wrapper {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        margin-left: 0px;
+        margin-right: 0px;
+      }
+
+      #form label,
+      #form select,
+      #form input {
+        margin-right: 4px;
+      }
+
+      #vis{
+        margin-top: 10px;
+      }
+
+      #footer {
+        text-align: right;
+      }
+
+
+    </style>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega@5"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega-lite@5.6.0"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega-embed@6"
+    ></script>
+  </head>
+  <body onload="refreshPlot()">
+    {% include "header.html" %} {% set location_codes_json = location_codes |
+    tojson | safe %} {% set activities_json = activities | tojson | safe %}
+
+    <div id="wrapper">
+      <form id="form">
+        <label for="location">Select Location:</label>
+        <select name="location" id="location" onchange="refreshPlot()">
+          {% for code, name in location_codes.items() %}
+          <option value="{{ code }}">{{ name }}</option>
+          {% endfor %}
+        </select>
+        <label for="activity">Select Activity:</label>
+        <select name="activity" id="activity" onchange="refreshPlot()">
+          {% for code, name in activities.items() %}
+          <option value="{{ code }}">{{ code }}</option>
+          {% endfor %}
+        </select>
+        <label for="minutes">Minutes</label>
+        <input
+          type="number"
+          id="minutes"
+          name="minutes"
+          value="10"
+          min="1"
+          max="60"
+          onchange="refreshPlot()"
+        />
+      </form>
+
+      <div id="vis"></div>
+      <div id="footer">
+        <p>
+          Prices from
+          <a href="https://www.hvakosterstrommen.no/" target="_blank">
+            www.hvakosterstrommen.no
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      async function refreshPlot() {
+        // begin constructing URL to request the plot JSON
+        const plotUrl = new URL(
+          `${document.location.protocol}//${document.location.host}/plot_activity.json`,
+        );
+
+        var locationInput = document.querySelector('select[name="location"]');
+        if (locationInput) {
+          plotUrl.searchParams.append("location", locationInput.value);
+        } else {
+          console.warn('No select with name="location"');
+        }
+
+        var activityInput = document.querySelector('select[name="activity"]');
+        if (activityInput) {
+          plotUrl.searchParams.append("activity", activityInput.value);
+        } else {
+          console.warn('No select with name="activity"');
+        }
+
+        var minutesInput = document.querySelector('input[name="minutes"]');
+        if (minutesInput) {
+          console.log(minutesInput.value);
+          plotUrl.searchParams.append("minutes", minutesInput.value);
+        } else {
+          console.warn('No input with name="minutes"');
+        }
+
+        console.log(`requesting new activity chart from ${plotUrl.href}`);
+        await fetchAndRenderPlot(plotUrl);
+      }
+
+      async function fetchAndRenderPlot(url) {
+        var response = await fetch(url.href);
+        var spec = await response.json();
+
+        var embedOpt = { mode: "vega-lite" };
+
+        function showError(el, error) {
+          el.innerHTML =
+            '<div class="error" style="color:red;">' +
+            "<p>JavaScript Error: " +
+            error.message +
+            "</p>" +
+            "<p>This usually means there's a typo in your chart specification. " +
+            "See the javascript console for the full traceback.</p>" +
+            "</div>";
+          throw error;
+        }
+
+        const el = document.getElementById("vis");
+        vegaEmbed("#vis", spec, embedOpt).catch((error) =>
+          showError(el, error),
+        );
+      }
+    </script>
+  </body>
+</html>

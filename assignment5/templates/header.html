@@ -1,0 +1,83 @@
+<style>
+  .topnav {
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  .topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    background-color: #193498;
+    width: 8rem;
+  }
+
+  .topnav a:hover {
+    background-color: whitesmoke;
+    color: #193498;
+  }
+
+  .topnav a.active {
+    background-color: white;
+    color: #333;
+  }
+
+  .header {
+    background-color: #333;
+    color: #f2f2f2;
+  }
+
+  .header_content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .location_wrapper {
+    display: flex;
+    flex-direction: row;
+  }
+
+  p {
+    margin: 2px;
+  }
+</style>
+<div class="header">
+  <div class="header_content">
+    <h1>IN4110 Assignment 5 - Strømpriser</h1>
+    <p>Created by Kristian H. Gravermoen</p>
+  </div>
+  <div class="topnav">
+    <a href="/" id="homeLink">Electricity Prices</a>
+    <a href="/activity" id="activityPricesLink">Activity Prices</a>
+    <a href="/docs" id="fastAPILink" target="_blank">FastAPI docs</a>
+    <a href="/help/" id="helpLink" target="_blank">Help</a>
+  </div>
+</div>
+
+<script>
+  // Get the current path of the URL
+  const currentPath = window.location.pathname;
+
+  // Function to set the 'active' class based on the current path
+  function setActiveClass(linkId, path) {
+    const link = document.getElementById(linkId);
+    if (path === currentPath) {
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  }
+
+  // Call the function for each link
+  setActiveClass("homeLink", "/");
+  setActiveClass("helpLink", "/help/");
+  setActiveClass("fastAPILink", "/docs/");
+  setActiveClass("activityPricesLink", "/activity");
+</script>
